@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+
+<style type="text/css">
+
+</style>
+
+
+<title>使劲拉呀！！！</title>
+</head>
+<body>
+<div id="list">
+人员列表：
+        <ul id="person"></ul>
+        
+</div>
+
+
+<div id="notice">
+	<h1>公告信息</h1>
+	<div id="notice_msg"></div>
+</div>
+
+<div id="push">
+<input type="text" value="" placeholder="请输入信息" name="message"/>
+<input type="button" id="push_btn" value="推送"/>
+</div>
+
+
+</body>
+</html>
+
+<script src="http://f3.v.veimg.cn/f2e/gallery/jquery/1.9.1/jquery.min.js"></script>
+
+<!-- 这里只要配置成 server 监听的地址  socket.io模块会自动处理的  -->
+<script src="http://168.192.122.29:1234/socket.io/socket.io.js"></script>
+
+<script type="text/javascript">
+
+var socket = io.connect("http://168.192.122.29:1234");
+
+
+        var postdata = {
+                name: "lijianwei" + Math.floor(Math.random()*100),
+                sex: '男'
+        };
+
+        socket.emit('login', postdata, function(result){
+                //console.log(result);
+        });
+
+
+
+        socket.on('conn', function(result){
+                //console.log(result);
+                $("#person").append($("<li/>").html("姓名:" + result.name + "性别:" + result.sex));
+        });
+
+        socket.on("pullMessage", function(data){
+        		console.log(data);
+        		$("#notice_msg").append(data.data);
+        });
+
+        $("input#push_btn").on('click', function(){
+        		socket.emit("pushMessage", {data: $("input[name='message']").val()}, function(msg){
+        			alert(msg);
+        		});
+        });
+</script>
